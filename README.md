@@ -1,2 +1,3 @@
-# greenbacks
-💵 Parse and display bank account statements in csv format
+# 💵 Greenbacks
+
+Parse and display bank account statements in csv format

@@ -1,4 +1,5 @@
 import React, { Component } from "react";
+import TagSelect from "./TagSelect";
 
 class Row extends Component {
 	render() {
@@ -21,6 +22,9 @@ class Row extends Component {
 				<td>{receiver}</td>
 				<td>{reference}</td>
 				<td className={amountClass}>{amount}€</td>
+				<td>
+					<TagSelect />
+				</td>
 			</tr>
 		);
 	}
