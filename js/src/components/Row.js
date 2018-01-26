@@ -1,30 +1,56 @@
 import React, { Component } from "react";
 import TagSelect from "./TagSelect";
+import md5 from "md5";
 
 class Row extends Component {
-	render() {
-		const date = this.props.data[0];
-		const receiver = this.props.data[3];
-		const reference = this.props.data[4];
-		const amount = parseFloat(this.props.data[7].replace(",", "."));
+	constructor(props) {
+		super(props);
+		this.state = {
+			duplicate: false
+		};
+	}
 
-		// set amount class
+	componentDidMount() {
+		var hash = md5(JSON.stringify(this.props.data));
+
+		window.db
+			.select()
+			.from(window.records)
+			.where(window.records.hash.eq(hash))
+			.exec()
+			.then(results => {
+				if (results.length > 0) {
+					this.setState({
+						duplicate: true
+					});
+				}
+			});
+	}
+
+	render() {
+		const { date, receiver, reference, amount } = this.props.data;
+
 		var amountClass = "";
-		if (amount > 0) {
-			amountClass = "text-green";
-		} else if (amount < 0) {
-			amountClass = "text-red";
+		var trClass = "";
+
+		if (this.state.duplicate === true) {
+			trClass = "tr-duplicate";
+		} else {
+			// set amount class
+			if (amount > 0) {
+				amountClass = "text-green";
+			} else if (amount < 0) {
+				amountClass = "text-red";
+			}
 		}
 
 		return (
-			<tr>
+			<tr className={trClass}>
 				<td>{date}</td>
 				<td>{receiver}</td>
 				<td>{reference}</td>
 				<td className={amountClass}>{amount}€</td>
-				<td>
-					<TagSelect />
-				</td>
+				<td>{this.state.duplicate === false ? <TagSelect /> : null}</td>
 			</tr>
 		);
 	}

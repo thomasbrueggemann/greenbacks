@@ -4,14 +4,13 @@ import RecordsActions from "../actions/RecordsActions";
 class RecordsStore {
 	constructor() {
 		this.bindActions(RecordsActions);
+
+		this.records = [];
 	}
 
-	insertSuccess(tx, r) {
-		console.log(r);
-	}
-
-	insertEroor(tx, e) {
-		console.error(e);
+	loadResults(results) {
+		console.log(results);
+		this.records = results;
 	}
 }
 

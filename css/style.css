@@ -9,3 +9,8 @@ body {
 .text-red {
 	color: red;
 }
+
+.tr-duplicate {
+	color: lightgrey !important;
+	text-decoration: line-through;
+}

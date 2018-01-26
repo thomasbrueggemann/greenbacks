@@ -2,6 +2,7 @@ import React, { Component } from "react";
 import Papa from "papaparse";
 import Row from "./Row";
 import RecordsActions from "../actions/RecordsActions";
+import RecordsStore from "../stores/RecordsStore";
 
 class Main extends Component {
 	constructor(props) {
@@ -11,6 +12,11 @@ class Main extends Component {
 		};
 	}
 
+	/**
+	 * Load the CSV file
+	 * @param  {[type]} e [description]
+	 * @return {[type]}   [description]
+	 */
 	handleFileUpload(e) {
 		const file = e.target.files[0];
 		Papa.parse(file, {
@@ -26,6 +32,10 @@ class Main extends Component {
 		});
 	}
 
+	/**
+	 * Perform the import to web sql database
+	 * @return {[type]} [description]
+	 */
 	doImport() {
 		this.state.data.forEach(r => {
 			RecordsActions.insert(
@@ -40,6 +50,10 @@ class Main extends Component {
 		});
 	}
 
+	/**
+	 * Render method
+	 * @return {JSX} the JSX markup
+	 */
 	render() {
 		return (
 			<div>
@@ -62,7 +76,13 @@ class Main extends Component {
 					</thead>
 					<tbody>
 						{this.state.data.map((d, idx) => {
-							return <Row key={"row-" + idx} data={d} />;
+							var record = {
+								date: d[0],
+								receiver: d[3],
+								reference: d[4],
+								amount: parseFloat(d[7].replace(",", "."))
+							};
+							return <Row key={"row-" + idx} data={record} />;
 						})}
 					</tbody>
 				</table>

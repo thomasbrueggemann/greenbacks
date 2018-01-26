@@ -12,6 +12,7 @@
   "license": "MIT",
   "dependencies": {
     "alt": "^0.17.4",
+    "bayes": "0.0.7",
     "lovefield": "^2.1.12",
     "md5": "^2.2.1",
     "moment": "^2.20.1",
