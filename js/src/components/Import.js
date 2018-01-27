@@ -3,6 +3,7 @@ import Papa from "papaparse";
 import Row from "./Row";
 import RecordsActions from "../actions/RecordsActions";
 import RecordsStore from "../stores/RecordsStore";
+import md5 from "md5";
 
 class Main extends Component {
 	constructor(props) {
@@ -24,9 +25,21 @@ class Main extends Component {
 				encoding: "UTF-8"
 			},
 			complete: results => {
-				const csv = results.data;
+				const csv = results.data.slice(7);
 				this.setState({
-					data: csv.slice(7)
+					data: csv.map(r => {
+						var d = {
+							date: r[0],
+							receiver: r[3],
+							reference: r[4],
+							amount: parseFloat(r[7].replace(",", "."))
+						};
+
+						var hash = md5(JSON.stringify(d));
+						d["hash"] = hash;
+
+						return d;
+					})
 				});
 			}
 		});
@@ -37,16 +50,31 @@ class Main extends Component {
 	 * @return {[type]} [description]
 	 */
 	doImport() {
-		this.state.data.forEach(r => {
-			RecordsActions.insert(
-				{
-					date: r[0],
-					receiver: r[3],
-					reference: r[4],
-					amount: parseFloat(r[7].replace(",", "."))
-				},
-				"test"
-			);
+		this.state.data
+			.filter(r => {
+				return "tag" in r && !!r.tag;
+			})
+			.forEach(r => {
+				RecordsActions.insert(r, "test");
+			});
+	}
+
+	/**
+	 * Triggers whenever the user selects a new tag
+	 * @param  {[type]} hash [description]
+	 * @param  {[type]} tag  [description]
+	 * @return {[type]}      [description]
+	 */
+	onTagSelect(hash, tag) {
+		var records = this.state.data.map(r => {
+			if (r.hash == hash) {
+				r.tag = tag;
+			}
+			return r;
+		});
+
+		this.setState({
+			data: records
 		});
 	}
 
@@ -75,14 +103,14 @@ class Main extends Component {
 						</tr>
 					</thead>
 					<tbody>
-						{this.state.data.map((d, idx) => {
-							var record = {
-								date: d[0],
-								receiver: d[3],
-								reference: d[4],
-								amount: parseFloat(d[7].replace(",", "."))
-							};
-							return <Row key={"row-" + idx} data={record} />;
+						{this.state.data.map((record, idx) => {
+							return (
+								<Row
+									key={"row-" + idx}
+									data={record}
+									onTagSelect={this.onTagSelect.bind(this)}
+								/>
+							);
 						})}
 					</tbody>
 				</table>

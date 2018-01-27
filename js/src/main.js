@@ -3,6 +3,26 @@ import { Router, Route, hashHistory } from "react-router";
 import ReactDOM from "react-dom";
 import routes from "./routes";
 import lf from "lovefield";
+import bayes from "bayes";
+
+window.classifier = bayes();
+if (localStorage.getItem("classifier")) {
+	window.classifier = bayes.fromJson(
+		JSON.parse(localStorage.getItem("classifier"))
+	);
+}
+
+window.addEventListener(
+	"beforeunload",
+	function(event) {
+		console.log("On Before Unload");
+		localStorage.setItem(
+			"classifier",
+			JSON.stringify(window.classifier.toJSON())
+		);
+	},
+	false
+);
 
 var schemaBuilder = lf.schema.create("records", 1);
 schemaBuilder

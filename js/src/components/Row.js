@@ -1,22 +1,20 @@
 import React, { Component } from "react";
 import TagSelect from "./TagSelect";
-import md5 from "md5";
 
 class Row extends Component {
 	constructor(props) {
 		super(props);
 		this.state = {
-			duplicate: false
+			duplicate: false,
+			tag: null
 		};
 	}
 
 	componentDidMount() {
-		var hash = md5(JSON.stringify(this.props.data));
-
 		window.db
 			.select()
 			.from(window.records)
-			.where(window.records.hash.eq(hash))
+			.where(window.records.hash.eq(this.props.data.hash))
 			.exec()
 			.then(results => {
 				if (results.length > 0) {
@@ -25,6 +23,10 @@ class Row extends Component {
 					});
 				}
 			});
+	}
+
+	onTagSelect(tag) {
+		this.props.onTagSelect(this.props.data.hash, tag);
 	}
 
 	render() {
@@ -50,7 +52,14 @@ class Row extends Component {
 				<td>{receiver}</td>
 				<td>{reference}</td>
 				<td className={amountClass}>{amount}€</td>
-				<td>{this.state.duplicate === false ? <TagSelect /> : null}</td>
+				<td>
+					{this.state.duplicate === false ? (
+						<TagSelect
+							data={this.props.data}
+							onTagSelect={this.onTagSelect.bind(this)}
+						/>
+					) : null}
+				</td>
 			</tr>
 		);
 	}

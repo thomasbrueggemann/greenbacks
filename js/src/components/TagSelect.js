@@ -22,15 +22,23 @@ class TagSelect extends Component {
 				"health",
 				"personal-care",
 				"subscriptions",
-				"cash-withdrawel"
+				"cash-withdrawel",
+				"income",
+				"misc"
 			]
 		};
 	}
 
+	onChange(e) {
+		this.props.onTagSelect(e.target.value);
+	}
+
 	render() {
+		var tags = this.state.tags;
+		tags.sort();
 		return (
-			<select>
-				{this.state.tags.map((tag, idx) => {
+			<select onChange={this.onChange.bind(this)}>
+				{tags.map((tag, idx) => {
 					return <option key={"opt-" + idx}>{tag}</option>;
 				})}
 			</select>
