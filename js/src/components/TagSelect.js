@@ -24,22 +24,38 @@ class TagSelect extends Component {
 				"subscriptions",
 				"cash-withdrawel",
 				"income",
-				"misc"
+				"misc",
+				"insurance",
+				"travel"
 			]
 		};
 	}
 
 	onChange(e) {
-		this.props.onTagSelect(e.target.value);
+		const v = e.target.value;
+		if (v.length > 0) {
+			this.props.onTagSelect(v);
+		}
 	}
 
 	render() {
 		var tags = this.state.tags;
 		tags.sort();
+
+		// make a guess
+		const guess = window.classifier.categorize(
+			this.props.data.receiver + " " + this.props.data.reference
+		);
+
 		return (
-			<select onChange={this.onChange.bind(this)}>
+			<select onChange={this.onChange.bind(this)} defaultValue={guess}>
+				<option value="">Please choose:</option>
 				{tags.map((tag, idx) => {
-					return <option key={"opt-" + idx}>{tag}</option>;
+					return (
+						<option key={"opt-" + idx} value={tag}>
+							{tag}
+						</option>
+					);
 				})}
 			</select>
 		);

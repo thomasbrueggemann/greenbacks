@@ -12,18 +12,6 @@ if (localStorage.getItem("classifier")) {
 	);
 }
 
-window.addEventListener(
-	"beforeunload",
-	function(event) {
-		console.log("On Before Unload");
-		localStorage.setItem(
-			"classifier",
-			JSON.stringify(window.classifier.toJSON())
-		);
-	},
-	false
-);
-
 var schemaBuilder = lf.schema.create("records", 1);
 schemaBuilder
 	.createTable("Record")

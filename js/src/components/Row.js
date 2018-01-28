@@ -1,5 +1,6 @@
 import React, { Component } from "react";
 import TagSelect from "./TagSelect";
+import moment from "moment";
 
 class Row extends Component {
 	constructor(props) {
@@ -48,7 +49,7 @@ class Row extends Component {
 
 		return (
 			<tr className={trClass}>
-				<td>{date}</td>
+				<td>{moment(date).format("DD.MM.YYYY")}</td>
 				<td>{receiver}</td>
 				<td>{reference}</td>
 				<td className={amountClass}>{amount}€</td>

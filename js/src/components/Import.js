@@ -1,9 +1,9 @@
 import React, { Component } from "react";
 import Papa from "papaparse";
 import Row from "./Row";
-import RecordsActions from "../actions/RecordsActions";
-import RecordsStore from "../stores/RecordsStore";
 import md5 from "md5";
+import moment from "moment";
+import lf from "lovefield";
 
 class Main extends Component {
 	constructor(props) {
@@ -29,7 +29,7 @@ class Main extends Component {
 				this.setState({
 					data: csv.map(r => {
 						var d = {
-							date: r[0],
+							date: moment(r[0], "DD.MM.YYYY").toDate(),
 							receiver: r[3],
 							reference: r[4],
 							amount: parseFloat(r[7].replace(",", "."))
@@ -50,13 +50,30 @@ class Main extends Component {
 	 * @return {[type]} [description]
 	 */
 	doImport() {
-		this.state.data
+		var rows = this.state.data
 			.filter(r => {
 				return "tag" in r && !!r.tag;
 			})
-			.forEach(r => {
-				RecordsActions.insert(r, "test");
+			.map(record => {
+				// train classifier
+				window.classifier.learn(
+					record.receiver + " " + record.reference,
+					record.tag
+				);
+
+				return window.records.createRow(record);
 			});
+
+		window.db
+			.insertOrReplace()
+			.into(window.records)
+			.values(rows)
+			.exec();
+
+		localStorage.setItem(
+			"classifier",
+			JSON.stringify(window.classifier.toJson())
+		);
 	}
 
 	/**
